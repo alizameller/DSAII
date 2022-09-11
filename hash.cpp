@@ -39,12 +39,21 @@ int hashTable::insert(const string &key, void *pv){
         // check if lazily deleted?
         // check if size >> ___ and if so, call re-hash
         // insert using key, pv and pushBack function?
+        return 0;
     } else { //if slot is full
         hashTable::hashItem.isOccupied = true;
         // linear probing to find next slot
+        // check if size >> ___ and if so, call re-hash
+        return 1;
     }
+    // if re-hash fails
+    return 2; 
 }
 
-// instance of hashTable
+// instance of hashTable constructor
 hashTable::hashTable(int size){
+    size = getPrime(); //to find size
+}
+// instance of hashItem constructor
+hashTable::hashItem::hashItem(){
 }
