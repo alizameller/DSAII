@@ -53,6 +53,7 @@ int hashTable::insert(const string &key, void *pv){
 // instance of hashTable constructor
 hashTable::hashTable(int size){
     size = getPrime(); //to find size
+    // allocate space for a list of size "size" 
 }
 // instance of hashItem constructor
 hashTable::hashItem::hashItem(){
