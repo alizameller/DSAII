@@ -5,9 +5,22 @@
 
 using namespace std;
 
+//hashTable constructor
+hashTable::hashTable(int size){
+    capacity = getPrimes(size); 
+    filled = 0;
+    vector<hashItem> data = []; //idk wtf this is supposed to be
+}
+
 // find position
 int hashTable::findPos(const string &key){
-    // somehow find position of key
+    int currentPos = hash(key); //this is an index value
+    while (currentPos < capacity){ // or should this be until a blank spot is found
+        // if item in currentPos == hashItem 
+            // return hash(key)
+        // currentPos = hash(key + 1)
+    }
+    // if program broke out of while loop -> hashItem is not in dictionary
 }
 
 // check if hashTable contains key
@@ -15,21 +28,26 @@ bool hashTable::contains(const string &key){
     if (findPos(&key) == -1) { // key was not found (i.e. not in table)
         return false;
     } else {
-        int pos = findPos(&key);
         return true;
     }
 }
 
 // function to get the next prime value for re-hashing
 unsigned int hashTable::getPrime(int size){
+    int primes[7] = {50021, 100153, 200363, 400853, 801811, 1604021, 3210703}; 
+    for (int i = 0; i < 7; i++) { 
+        if (primes[i] > 2 * size) {
+            return primes[i]; 
+        }
+    }
 }
 
 // Hash function to calculate hash for a value
 int hashTable::hash(const string &key){
 }
 
-bool hashTable::rehash(){
-    // use getPrime and make new hashTable with size of new prime
+bool hashTable::rehash(){ //why are there no input paramters
+    capacity = getPrime(capacity); // put the *2 here or in the getPrime function?
 }
 
 // inserting into hashTable
@@ -37,24 +55,24 @@ int hashTable::insert(const string &key, void *pv){
     if (contains(&key) == false) { //if slot is empty
         hashTable::hashItem.isOccupied = false;
         // check if lazily deleted?
-        // check if size >> ___ and if so, call re-hash
+        if (filled >= capacity / 2) { // check if filled >= capacity/2 and if so, call re-hash
+            rehash();
+            insert(key, pv);
+        } else {
+            pv = hash(key); 
         // insert using key, pv and pushBack function?
-        return 0;
+            return 0;
+        }
     } else { //if slot is full
         hashTable::hashItem.isOccupied = true;
         // linear probing to find next slot
-        // check if size >> ___ and if so, call re-hash
-        return 1;
+        if (filled >= capacity / 2) { // check if filled >= capacity/2 and if so, call re-hash
+            rehash();
+            insert(key, pv);
+        } else {
+            return 1;
+        }
     }
-    // if re-hash fails
+    // if insert fails (do I need this?)
     return 2; 
-}
-
-// instance of hashTable constructor
-hashTable::hashTable(int size){
-    size = getPrime(); //to find size
-    // allocate space for a list of size "size" 
-}
-// instance of hashItem constructor
-hashTable::hashItem::hashItem(){
 }

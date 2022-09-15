@@ -25,5 +25,25 @@ Total time (in seconds) to check document:
 // go to next word
 
 int main() {
+    ifstream dictFile; //read Dictionary
+    ifstream inFile; //read inFile
+    ofstream outFile; //write outFile
 
+    string dictFileName; 
+    string inputFileName;
+    string outputFileName;
+
+    cout << "Enter name of dictionary file: ";
+    cin >> dictFileName;
+    infile.open(dictFileName);
+    // time display
+    
+    cout << "Enter name of input file: ";
+    cin >> inputFileName;
+    inFile.open(inputFileName);
+
+    cout << "Enter name of output file: ";
+    cin >> outputFileName;
+    outFile.open(outputFileName);
+    // time display
 }
