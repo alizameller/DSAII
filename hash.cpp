@@ -7,14 +7,14 @@ using namespace std;
 
 //hashTable constructor
 hashTable::hashTable(int size){
-    capacity = getPrimes(size); 
+    capacity = getPrimes(size); // this.getPrimes(size) instead?
     filled = 0;
     vector<hashItem> data = []; //idk wtf this is supposed to be
 }
 
 // find position
 int hashTable::findPos(const string &key){
-    int currentPos = hash(key); //this is an index value
+    int currentPos = this.hash(key); //this is an index value
     while (currentPos < capacity){ 
         if (data[currentPos].isDeleted){ // slot is lazily deleted
             currentPos++;
@@ -33,7 +33,7 @@ int hashTable::findPos(const string &key){
 
 // check if hashTable contains key
 bool hashTable::contains(const string &key){
-    if (findPos(&key) == -1) { // key was not found (i.e. not in table)
+    if (this.findPos(key) == -1) { // key was not found (i.e. not in table)
         return false;
     } else {
         return true;
@@ -54,12 +54,32 @@ unsigned int hashTable::getPrime(int size){
 int hashTable::hash(const string &key){
 }
 
-bool hashTable::rehash(){ //why are there no input paramters
+bool hashTable::rehash(){
     capacity = getPrime(capacity); // put the *2 here or in the getPrime function?
+    hash(); // do I have to re-call the hash function on all hashItems?
 }
 
 // inserting into hashTable
 int hashTable::insert(const string &key, void *pv){
+    if (this.contains(key)){ //key is in hashTable
+        return 1;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     if (contains(&key) == false) { //if slot is empty
         hashTable::hashItem.isOccupied = false;
         // check if lazily deleted?
