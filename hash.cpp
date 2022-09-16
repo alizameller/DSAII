@@ -15,12 +15,20 @@ hashTable::hashTable(int size){
 // find position
 int hashTable::findPos(const string &key){
     int currentPos = hash(key); //this is an index value
-    while (currentPos < capacity){ // or should this be until a blank spot is found
-        // if item in currentPos == hashItem 
-            // return hash(key)
-        // currentPos = hash(key + 1)
+    while (currentPos < capacity){ 
+        if (data[currentPos].isDeleted){ // slot is lazily deleted
+            currentPos++;
+            continue;
+        } else if (!data[currentPos].isOccupied) { // not deleted, not occupied
+            return -1;
+        } else if (data[currentPos].key == key) { // key being checked is same as key at currentPos
+            return currentPos; 
+        }   
+        currentPos++;
+        if (currentPos == capacity){
+            currentPos = 0;
+        }
     }
-    // if program broke out of while loop -> hashItem is not in dictionary
 }
 
 // check if hashTable contains key
