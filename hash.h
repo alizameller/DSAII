@@ -52,13 +52,13 @@ class hashTable {
   // pv - a pointer related to the key;
   //      nullptr if no pointer was provided to insert.
   class hashItem {
-  public:
-    std::string key {""};
-    bool isOccupied {false};
-    bool isDeleted {false};
-    void *pv {nullptr};
+    public:
+      std::string key;
+      bool isOccupied;
+      bool isDeleted;
+      void *pv;
 
-    hashItem() = default;
+      hashItem();
   };
 
   int capacity; // The current capacity of the hash table.

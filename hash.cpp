@@ -2,19 +2,27 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <vector>
 
 using namespace std;
 
+hashTable::hashItem::hashItem() {
+    key = "";
+    isOccupied = false;
+    isDeleted = false;
+    pv = nullptr;
+}
+
 //hashTable constructor
 hashTable::hashTable(int size){
-    capacity = getPrimes(size); // this.getPrimes(size) instead?
+    capacity = getPrime(size); // this.getPrimes(size) instead?
     filled = 0;
-    vector<hashItem> data = []; //idk wtf this is supposed to be
+    data = vector<hashItem>(capacity);
 }
 
 // find position
 int hashTable::findPos(const string &key){
-    int currentPos = this.hash(key); //this is an index value
+    int currentPos = this->hash(key); //this is an index value
     while (currentPos < capacity){ 
         if (data[currentPos].isDeleted){ // slot is lazily deleted
             currentPos++;
@@ -22,18 +30,19 @@ int hashTable::findPos(const string &key){
         } else if (!data[currentPos].isOccupied) { // not deleted, not occupied
             return -1;
         } else if (data[currentPos].key == key) { // key being checked is same as key at currentPos
-            return currentPos; 
+            return currentPos;; 
         }   
         currentPos++;
         if (currentPos == capacity){
             currentPos = 0;
         }
     }
+    return 0; //this will never trigger (just to suppress warning)
 }
 
 // check if hashTable contains key
 bool hashTable::contains(const string &key){
-    if (this.findPos(key) == -1) { // key was not found (i.e. not in table)
+    if (this->findPos(key) == -1) { // key was not found (i.e. not in table)
         return false;
     } else {
         return true;
@@ -48,59 +57,62 @@ unsigned int hashTable::getPrime(int size){
             return primes[i]; 
         }
     }
+    return 0; //this will never trigger (just to suppress warning)
 }
 
 // Hash function to calculate hash for a value
 int hashTable::hash(const string &key){
+    int seed = 37;
+    int hashVal = 0;
+
+    for (char ch : key) {
+        hashVal = seed * hashVal + ch; 
+    }
+
+    return hashVal % capacity; 
 }
 
 bool hashTable::rehash(){
-    capacity = getPrime(capacity); // put the *2 here or in the getPrime function?
-    hash(); // do I have to re-call the hash function on all hashItems?
+    vector<hashItem> oldData = data;
+    capacity = getPrime(capacity);
+    try {
+        data = vector<hashItem>(capacity);
+            for (hashItem x : oldData) {
+                if (x.isOccupied && !x.isDeleted) {
+                    this->insert(x.key, x.pv);
+                }
+            }
+        return true; 
+    } catch (const bad_alloc& e){
+        return false;
+    }
 }
 
 // inserting into hashTable
 int hashTable::insert(const string &key, void *pv){
-    if (this.contains(key)){ //key is in hashTable
+    if (this->contains(key)){ //key is in hashTable
         return 1;
+    } 
+    
+    if (filled >= capacity/2) {
+        if(!this->rehash()) {
+            return 2; 
+        } 
     }
 
+    int insertPos = this->hash(key); 
 
+    while (data[insertPos].isOccupied && !data[insertPos].isDeleted){ // check if pos is occupied
+        insertPos++; 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if (contains(&key) == false) { //if slot is empty
-        hashTable::hashItem.isOccupied = false;
-        // check if lazily deleted?
-        if (filled >= capacity / 2) { // check if filled >= capacity/2 and if so, call re-hash
-            rehash();
-            insert(key, pv);
-        } else {
-            pv = hash(key); 
-        // insert using key, pv and pushBack function?
-            return 0;
+        if (insertPos == capacity){
+            insertPos = 0;
         }
-    } else { //if slot is full
-        hashTable::hashItem.isOccupied = true;
-        // linear probing to find next slot
-        if (filled >= capacity / 2) { // check if filled >= capacity/2 and if so, call re-hash
-            rehash();
-            insert(key, pv);
-        } else {
-            return 1;
-        }
+
     }
-    // if insert fails (do I need this?)
-    return 2; 
+    data[insertPos].key = key;
+    data[insertPos].isDeleted = false;
+    data[insertPos].isOccupied = true;
+    data[insertPos].pv = pv;
+    return 0;
 }
