@@ -5,48 +5,65 @@
 
 using namespace std;
 
-/* Prompts: 
-Enter name of dictionary: 
-Total time (in seconds) to load dictionary: 
+hashTable makeDict(string dictFileName) {
+    ifstream dictFile; 
+    dictFile.open(dictFileName);
 
-Enter name of input file: 
-
-Enter name of output file: 
-Total time (in seconds) to check document: 
-*/
-
-// traverse dictionary file one word at a time
-// insert each word into hash table (dictionary)
-
-// traverse input file one word at a time
-// for each word, check if hash table contains word
-//      if yes, print message in output file
-//      if not, print message in output file
-// go to next word
-hashTable read (ifstream dictFile) {
     string word;
-    hashTable dictionary; 
+    hashTable dictionary = hashTable(); 
+
     while (getline(dictFile, word)) { 
         dictionary.insert(word); 
     }
+
+    dictFile.close();
     return dictionary; 
 }
 
-
-int main() {
-    ifstream dictFile; //read Dictionary
+void checkFile(string inFileName, string outFileName, hashTable dictionary) {
     ifstream inFile; //read inFile
     ofstream outFile; //write outFile
+    inFile.open(inFileName);
+    outFile.open(outFileName);
 
+    string line; 
+    string::iterator it;
+    int lineNum = 0;
+    // consider multiple invalid characters in a row (ex: "hello????adin")
+    while(getline(inFile, line)) { 
+        lineNum++; 
+
+        for (it = line.begin(); it != line.end(); it++) {
+            //check if character is valid 
+            if ((*it >= 'a' && *it <= 'z') || (*it >= 'A' && *it <= 'Z') || *it == '\'' || 
+                 *it == '-' || (*it >= '0' && *it <= '9')) {
+                    //check if counter == 20
+                    if (it - line.begin() == 20) {
+                        outFile << "Long word at line" << lineNum << ", starts: " << string(line.begin(), it) << "\n"; 
+                    }
+                continue;
+            } else if (it - line.begin() < 20 && !dictionary.contains(string(line.begin(), it))) {
+                outFile << "Unknown word at line" << lineNum << ": " << string(line.begin(), it) << "\n"; 
+            }
+            //adjust line so that line.begin() starts at the beginning of 
+            line = string(it + 1, line.end()); 
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+}
+
+int main() {
     string dictFileName; 
     string inputFileName;
     string outputFileName;
 
     cout << "Enter name of dictionary file: ";
     cin >> dictFileName;
-    dictFile.open(dictFileName);
+    
     clock_t read1 = clock();
-    read(ifstream dictFile); 
+    hashTable dictionary = makeDict(dictFileName); 
     clock_t read2 = clock();
     double readTimeDiff = ((double) (read2 - read1)) / CLOCKS_PER_SEC;
 
@@ -54,13 +71,12 @@ int main() {
 
     cout << "Enter name of input file: ";
     cin >> inputFileName;
-    inFile.open(inputFileName);
 
     cout << "Enter name of output file: ";
     cin >> outputFileName;
-    outFile.open(outputFileName);
+
     clock_t check1 = clock();
-    // check dictionary
+    checkFile(inputFileName, outputFileName, dictionary); 
     clock_t check2 = clock();
     double checkTimeDiff = ((double) (check2 - check1)) / CLOCKS_PER_SEC;
 
