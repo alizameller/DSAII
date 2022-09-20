@@ -90,12 +90,12 @@ bool hashTable::rehash(){
 
 // inserting into hashTable
 int hashTable::insert(const string &key, void *pv){
-    if (this->contains(key)){ //key is in hashTable
+    if (this->contains(key)) { //key is in hashTable
         return 1;
     } 
     
     if (filled >= capacity/2) {
-        if(!this->rehash()) {
+        if(!this->rehash()) { //if rehash fails
             return 2; 
         } 
     }
@@ -114,5 +114,8 @@ int hashTable::insert(const string &key, void *pv){
     data[insertPos].isDeleted = false;
     data[insertPos].isOccupied = true;
     data[insertPos].pv = pv;
+
+    filled++;
+
     return 0;
 }

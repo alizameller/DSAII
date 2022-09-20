@@ -13,6 +13,11 @@ hashTable makeDict(string dictFileName) {
     hashTable dictionary = hashTable(); 
 
     while (getline(dictFile, word)) { 
+        for(int i = 0; i < sizeof word; i++) { 
+            if(word[i] >= 'A' && word[i] <= 'Z') {
+                word[i] = word[i] + 32;
+            }
+        }
         dictionary.insert(word); 
     }
 
@@ -27,33 +32,61 @@ void checkFile(string inFileName, string outFileName, hashTable dictionary) {
     outFile.open(outFileName, ios::out);
 
     string line; 
+    
     string::iterator it;
     int lineNum = 0;
     int offset; 
+    int firstPrint = 1;
+    int hasDigit;
     // consider multiple invalid characters in a row (ex: "hello????adin")
     while(getline(inFile, line)) { 
         lineNum++; 
         offset = 0;
+        hasDigit = 0;
 
         for (it = line.begin(); it != line.end(); it++) {
             //check if character is valid 
             if ((*it >= 'a' && *it <= 'z') || (*it >= 'A' && *it <= 'Z') || *it == '\'' || 
                  *it == '-' || (*it >= '0' && *it <= '9')) {
+
+                    if(*it >= 'A' && *it <= 'Z') {
+                        *it = *it + 32;
+                    } else if (*it >= '0' && *it <= '9') {
+                        hasDigit = 1;
+                    }
+
                     if (it - (line.begin() + offset) == 20) {
-                        outFile << "Long word at line " << lineNum << ", starts: " << string(line.begin() + offset, it) << endl; 
+                        if (firstPrint) {
+                            outFile << "Long word at line " << lineNum << ", starts: " << string(line.begin() + offset, it); 
+                            firstPrint = 0;
+                        } else {
+                            outFile << endl << "Long word at line " << lineNum << ", starts: " << string(line.begin() + offset, it); 
+                        }
                     }
                 continue;
 
-            } else if ((string(line.begin() + offset, it) != "") && it - (line.begin() + offset) < 20 && 
+            } else if (!hasDigit && (string(line.begin() + offset, it) != "") && it - (line.begin() + offset) <= 20 && 
                         !dictionary.contains(string(line.begin() + offset, it))) {
-                outFile << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it) << endl; 
+                if (firstPrint) {
+                    outFile << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it); 
+                    firstPrint = 0;
+                } else {
+                    outFile << endl << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it);
+                } 
             }
 
             offset = it + 1 - line.begin(); 
+            hasDigit = 0;
         }
 
-        if ((string(line.begin() + offset, it) != "") && !dictionary.contains(string(line.begin() + offset, it))) {
-            outFile << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it) << endl; 
+        if (!hasDigit && (string(line.begin() + offset, it) != "") && it - (line.begin() + offset) <= 20 && 
+            !dictionary.contains(string(line.begin() + offset, it))) {
+            if (firstPrint) {
+                outFile << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it); 
+                firstPrint = 0;
+            } else {
+                outFile << endl << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it);
+            }
         }
     }
 
