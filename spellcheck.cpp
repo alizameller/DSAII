@@ -39,7 +39,7 @@ void checkFile(string inFileName, string outFileName, hashTable dictionary) {
             //check if character is valid 
             if ((*it >= 'a' && *it <= 'z') || (*it >= 'A' && *it <= 'Z') || *it == '\'' || 
                  *it == '-' || (*it >= '0' && *it <= '9')) {
-                    if (it - line.begin() + offset == 20) {
+                    if (it - (line.begin() + offset) == 20) {
                         outFile << "Long word at line " << lineNum << ", starts: " << string(line.begin() + offset, it) << endl; 
                     }
                 continue;
