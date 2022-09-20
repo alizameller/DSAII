@@ -66,10 +66,10 @@ int hashTable::hash(const string &key){
     int hashVal = 0;
 
     for (char ch : key) {
-        hashVal = seed * hashVal + ch; 
+        hashVal = (seed * hashVal + ch) % capacity; 
     }
 
-    return hashVal % capacity; 
+    return hashVal; 
 }
 
 bool hashTable::rehash(){

@@ -23,30 +23,36 @@ hashTable makeDict(string dictFileName) {
 void checkFile(string inFileName, string outFileName, hashTable dictionary) {
     ifstream inFile; //read inFile
     ofstream outFile; //write outFile
-    inFile.open(inFileName);
-    outFile.open(outFileName);
+    inFile.open(inFileName, ios::in);
+    outFile.open(outFileName, ios::out);
 
     string line; 
     string::iterator it;
     int lineNum = 0;
+    int offset; 
     // consider multiple invalid characters in a row (ex: "hello????adin")
     while(getline(inFile, line)) { 
         lineNum++; 
+        offset = 0;
 
         for (it = line.begin(); it != line.end(); it++) {
             //check if character is valid 
             if ((*it >= 'a' && *it <= 'z') || (*it >= 'A' && *it <= 'Z') || *it == '\'' || 
                  *it == '-' || (*it >= '0' && *it <= '9')) {
                     //check if counter == 20
-                    if (it - line.begin() == 20) {
-                        outFile << "Long word at line" << lineNum << ", starts: " << string(line.begin(), it) << "\n"; 
+                    if (it - line.begin() + offset == 20) {
+                        outFile << "Long word at line " << lineNum << ", starts: " << string(line.begin() + offset, it) << endl; 
                     }
                 continue;
-            } else if (it - line.begin() < 20 && !dictionary.contains(string(line.begin(), it))) {
-                outFile << "Unknown word at line" << lineNum << ": " << string(line.begin(), it) << "\n"; 
+            } else if ((string(line.begin() + offset, it) != "") && it - line.begin() + offset < 20 && !dictionary.contains(string(line.begin() + offset, it))) {
+                outFile << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it) << endl; 
             }
-            //adjust line so that line.begin() starts at the beginning of 
-            line = string(it + 1, line.end()); 
+
+            offset = it + 1 - line.begin(); 
+        }
+
+        if ((string(line.begin() + offset, it) != "") && !dictionary.contains(string(line.begin() + offset, it))) {
+            outFile << "Unknown word at line " << lineNum << ": " << string(line.begin() + offset, it) << endl; 
         }
     }
 
