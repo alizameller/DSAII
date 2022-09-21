@@ -23,15 +23,8 @@ hashTable::hashTable(int size){
 // find position
 int hashTable::findPos(const string &key){
     int currentPos = this->hash(key); //this is an index value
-    if (currentPos < 0) {
-            cout << "outside" << currentPos << endl; 
-            cout << key << endl; 
-        }
+
     while (currentPos < capacity){ 
-        if (currentPos < 0) {
-            cout << "within loop" << currentPos << endl; 
-            cout << key << endl; 
-        }
         if (data[currentPos].isDeleted){ // slot is lazily deleted
             currentPos++;
             continue;
