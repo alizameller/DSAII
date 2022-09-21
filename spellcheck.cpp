@@ -5,6 +5,11 @@
 
 using namespace std;
 
+bool isValidChar(char c){
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '\'' || 
+            c == '-' || (c >= '0' && c <= '9');
+}
+
 hashTable makeDict(string dictFileName) {
     ifstream dictFile; 
     dictFile.open(dictFileName);
@@ -46,9 +51,7 @@ void checkFile(string inFileName, string outFileName, hashTable dictionary) {
 
         for (it = line.begin(); it != line.end(); it++) {
             //check if character is valid 
-            if ((*it >= 'a' && *it <= 'z') || (*it >= 'A' && *it <= 'Z') || *it == '\'' || 
-                 *it == '-' || (*it >= '0' && *it <= '9')) {
-
+            if (isValidChar(*it)) {
                     if(*it >= 'A' && *it <= 'Z') {
                         *it = *it + 32;
                     } else if (*it >= '0' && *it <= '9') {

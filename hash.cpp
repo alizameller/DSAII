@@ -93,12 +93,6 @@ int hashTable::insert(const string &key, void *pv){
     if (this->contains(key)) { //key is in hashTable
         return 1;
     } 
-    
-    if (filled >= capacity/2) {
-        if(!this->rehash()) { //if rehash fails
-            return 2; 
-        } 
-    }
 
     int insertPos = this->hash(key); 
 
@@ -116,6 +110,12 @@ int hashTable::insert(const string &key, void *pv){
     data[insertPos].pv = pv;
 
     filled++;
+
+    if (filled >= capacity/2) {
+        if(!this->rehash()) { //if rehash fails
+            return 2; 
+        } 
+    }
 
     return 0;
 }
