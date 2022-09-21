@@ -23,7 +23,15 @@ hashTable::hashTable(int size){
 // find position
 int hashTable::findPos(const string &key){
     int currentPos = this->hash(key); //this is an index value
+    if (currentPos < 0) {
+            cout << "outside" << currentPos << endl; 
+            cout << key << endl; 
+        }
     while (currentPos < capacity){ 
+        if (currentPos < 0) {
+            cout << "within loop" << currentPos << endl; 
+            cout << key << endl; 
+        }
         if (data[currentPos].isDeleted){ // slot is lazily deleted
             currentPos++;
             continue;
@@ -61,9 +69,9 @@ unsigned int hashTable::getPrime(int size){
 }
 
 // Hash function to calculate hash for a value
-int hashTable::hash(const string &key){
+unsigned int hashTable::hash(const string &key){
     int seed = 37;
-    int hashVal = 0;
+    unsigned int hashVal = 0;
 
     for (char ch : key) {
         hashVal = (seed * hashVal + ch) % capacity; 
@@ -75,6 +83,7 @@ int hashTable::hash(const string &key){
 bool hashTable::rehash(){
     vector<hashItem> oldData = data;
     capacity = getPrime(capacity);
+    filled = 0;
     try {
         data = vector<hashItem>(capacity);
             for (hashItem x : oldData) {
