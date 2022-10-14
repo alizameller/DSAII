@@ -83,7 +83,7 @@ void heap::percolateUp(int posCur) {
         data[posCur/2] = newNode; //put new node at location of parent node
         if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
             // key does not exist on hashTable
-            // fprintf ERROR
+            fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
         }
         posCur = posCur/2; 
     }
@@ -99,23 +99,28 @@ void heap::percolateUp(int posCur) {
 void heap::percolateDown(int posCur) {
     // while parent is greater than (at least one of) its child(ren)
     node hold; 
-    while (data[posCur].key >= data[posCur/2].key || data[posCur].key >= data[posCur/2 + 1].key) {
-        if (posCur == currentSize) {
-            break; 
-        }
+    while (posCur*2 + 1 <= currentSize && 
+           (data[posCur].key >= data[posCur*2].key || data[posCur].key >= data[posCur*2 + 1].key)) {
+            // inside while loop we can assume both children exist
         hold = data[posCur];
 
-        // if data[posCur/2].key is valid 
-            // check if data[posCur/2 + 1].key is valid
-                // if data[posCur/2].key >= data[posCur/2 + 1].key
-                    //data[posCur] = data[posCur/2]; //push parent node down one level
-                    //data[posCur/2] = hold; //put hold node at location of parent node
-        // else
-            data[posCur] = data[posCur/2 + 1]; //push parent node down one level
-            data[posCur/2 + 1] = hold;
-
-        // else
-            // ERROR?
+        if (data[posCur*2].key >= data[posCur*2 + 1].key) {
+            data[posCur] = data[posCur*2]; // push child node up to parent location
+            data[posCur*2] = hold; // put hold node at location of child node
+            if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
+                // key does not exist on hashTable
+                fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
+            }
+            posCur = posCur*2;
+        } else {
+            data[posCur] = data[posCur*2 + 1]; // push child node up to parent location
+            data[posCur*2 + 1] = hold; // put hold node at location of child node
+            if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
+                // key does not exist on hashTable
+                fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
+            }
+            posCur = posCur*2 + 1;
+        }
     }
 }
 
