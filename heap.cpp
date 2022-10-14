@@ -84,6 +84,7 @@ void heap::percolateUp(int posCur) {
         if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
             // key does not exist on hashTable
             fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
+            exit(1);
         }
         posCur = posCur/2; 
     }
@@ -97,8 +98,8 @@ void heap::percolateUp(int posCur) {
 }
 
 void heap::percolateDown(int posCur) {
-    // while parent is greater than (at least one of) its child(ren)
     node hold; 
+    // while parent is greater than (at least one of) its child(ren)
     while (posCur*2 + 1 <= currentSize && 
            (data[posCur].key >= data[posCur*2].key || data[posCur].key >= data[posCur*2 + 1].key)) {
             // inside while loop we can assume both children exist
@@ -110,6 +111,7 @@ void heap::percolateDown(int posCur) {
             if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
                 // key does not exist on hashTable
                 fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
+                exit(1);
             }
             posCur = posCur*2;
         } else {
@@ -118,10 +120,32 @@ void heap::percolateDown(int posCur) {
             if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
                 // key does not exist on hashTable
                 fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
+                exit(1);
             }
             posCur = posCur*2 + 1;
         }
     }
+
+    if (posCur*2 <= currentSize && data[posCur].key >= data[posCur*2].key) { // we know there is only a left node 
+        hold = data[posCur];
+        data[posCur] = data[posCur*2]; // push child node up to parent location
+        data[posCur*2] = hold; // put hold node at location of child node
+
+        if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
+            // key does not exist on hashTable
+            fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
+            exit(1); 
+        }
+        posCur = posCur*2; 
+    }
+
+    if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of node in hashTable
+        // key does not exist on hashTable
+        fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
+        exit(1); 
+    }
+
+    return; // no children
 }
 
 int heap::getPos(heap::node *pn) {
