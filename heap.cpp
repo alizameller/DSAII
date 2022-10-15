@@ -37,11 +37,6 @@ int heap::insert(const std::string &id, int key, void *pv = (void *)nullptr) {
     this->currentSize++; 
 }
 
- /* get pointer to node from id in hashTable mapping
-    bool b; 
-    node *pn = static_cast<node *> (mapping.getPointer(id, &b));
-    */
-
 int heap::setKey(const std::string &id, int key) {
     //increase key
 
@@ -77,7 +72,32 @@ int heap::deleteMin(std::string *pId = nullptr, int *pKey = nullptr, void *ppDat
 }
 
 int heap::remove(const std::string &id, int *pKey = nullptr, void *ppData = nullptr) {
+    // if currentSize = 0?
 
+    //get pointer to node from id in hashTable mapping
+    bool b; 
+    node *pn = static_cast<node *> (mapping.getPointer(id, &b));
+
+    if (pKey) {
+        *pKey = pn->key;
+    }
+    if (ppData) {
+       *(static_cast<void **> (ppData)) = pn->pData;
+    }
+    //why not the id?
+
+    if (!mapping.remove(pn->id)) { //remove this item from hash table
+        fprintf(stderr, "Error: Item %s not found in hash table", pn->id); 
+        // does this mean node does not exist?
+        return 1;
+    }
+
+    *pn = data[currentSize];
+    currentSize--; //remove the last item from heap
+
+    percolateDown(1); //or start with index of removed node?
+
+    return 0;
 }
 
 void heap::percolateUp(int posCur) {
