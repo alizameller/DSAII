@@ -84,7 +84,7 @@ int heap::remove(const std::string &id, int *pKey = nullptr, void *ppData = null
     if (ppData) {
        *(static_cast<void **> (ppData)) = pn->pData;
     }
-    //why not the id?
+    //why not the id? just for understanding purposes
 
     if (!mapping.remove(pn->id)) { //remove this item from hash table
         fprintf(stderr, "Error: Item %s not found in hash table", pn->id); 
