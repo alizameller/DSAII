@@ -5,6 +5,8 @@
 #include <list>
 #include <vector>
 
+using namespace std; 
+
 heap::heap(int capacity):mapping(capacity*2) {
     // Allocate space for the nodes (0 slot is not used)
     data.resize(capacity+1);
@@ -75,7 +77,7 @@ int heap::deleteMin(std::string *pId = nullptr, int *pKey = nullptr, void *ppDat
 
     if (!mapping.remove(data[1].id)) { //remove this item from hash table
         fprintf(stderr, "Error: Item %s not found in hash table", data[1].id); 
-        std::exit(1);
+        exit(1);
     }
 
     data[1] = data[currentSize];
@@ -133,7 +135,7 @@ void heap::percolateUp(int posCur) {
         if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
             // key does not exist on hashTable
             fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
-            std::exit(1);
+            exit(1);
         }
         posCur = posCur/2; 
     }
@@ -160,7 +162,7 @@ void heap::percolateDown(int posCur) {
             if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
                 // key does not exist on hashTable
                 fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
-                std::exit(1);
+                exit(1);
             }
             posCur = posCur*2;
         } else {
@@ -169,7 +171,7 @@ void heap::percolateDown(int posCur) {
             if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
                 // key does not exist on hashTable
                 fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
-                std::exit(1);
+                exit(1);
             }
             posCur = posCur*2 + 1;
         }
@@ -183,7 +185,7 @@ void heap::percolateDown(int posCur) {
         if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
             // key does not exist on hashTable
             fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
-            std::exit(1);
+            exit(1);
         }
         posCur = posCur*2; 
     }
@@ -191,7 +193,7 @@ void heap::percolateDown(int posCur) {
     if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of node in hashTable
         // key does not exist on hashTable
         fprintf(stderr, "Error: Item %s not found in hash table", data[posCur].id); 
-        std::exit(1); 
+        exit(1); 
     }
 
     return; // no children
