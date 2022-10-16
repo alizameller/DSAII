@@ -13,9 +13,9 @@ heap::heap(int capacity):mapping(capacity*2) {
 }
 
 heap::node::node(){
-    id;
-    key;
-    pData; 
+    id = "";
+    key = 0;
+    pData = (void *)nullptr; 
 }
 
 int heap::insert(const std::string &id, int key, void *pv = (void *)nullptr) {
@@ -38,9 +38,24 @@ int heap::insert(const std::string &id, int key, void *pv = (void *)nullptr) {
 }
 
 int heap::setKey(const std::string &id, int key) {
-    //increase key
+    int posCur; 
+    bool b;
+    node* pn = static_cast<node *> (mapping.getPointer(id)); 
+    if (!b) {
+        return 1; 
+    }    
+    posCur = getPos(pn);
 
-    //decrease key
+    int tempKey = pn->key;
+    pn->key = key;
+
+    if (key < tempKey) { //decrease key 
+        percolateUp(posCur); 
+    } else if (key > tempKey) { //increase key
+        percolateDown(posCur);
+    }
+
+    return 0; 
 }
 
 int heap::deleteMin(std::string *pId = nullptr, int *pKey = nullptr, void *ppData = nullptr) {
@@ -72,11 +87,12 @@ int heap::deleteMin(std::string *pId = nullptr, int *pKey = nullptr, void *ppDat
 }
 
 int heap::remove(const std::string &id, int *pKey = nullptr, void *ppData = nullptr) {
-    // if currentSize = 0?
-
     //get pointer to node from id in hashTable mapping
     bool b; 
     node *pn = static_cast<node *> (mapping.getPointer(id, &b));
+    if (!b) {
+        return 1; 
+    }
 
     if (pKey) {
         *pKey = pn->key;
@@ -84,18 +100,21 @@ int heap::remove(const std::string &id, int *pKey = nullptr, void *ppData = null
     if (ppData) {
        *(static_cast<void **> (ppData)) = pn->pData;
     }
-    //why not the id? just for understanding purposes
 
     if (!mapping.remove(pn->id)) { //remove this item from hash table
         fprintf(stderr, "Error: Item %s not found in hash table", pn->id); 
-        // does this mean node does not exist?
-        return 1;
+        exit(1);
     }
 
+    int tempKey = pn->key;
     *pn = data[currentSize];
     currentSize--; //remove the last item from heap
 
-    percolateDown(1); //or start with index of removed node?
+    if (pn->key < tempKey) { 
+        percolateUp(getPos(pn)); 
+    } else if (pn->key > tempKey) {
+        percolateDown(getPos(pn));
+    }
 
     return 0;
 }
