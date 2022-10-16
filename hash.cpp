@@ -50,6 +50,14 @@ bool hashTable::contains(const string &key){
     }
 }
 
+void *getPointer(const std::string &key, bool *b = nullptr) {
+    &b = contains(key);
+}
+
+int setPointer(const std::string &key, void *pv);
+
+bool remove(const std::string &key);
+
 // function to get the next prime value for re-hashing
 unsigned int hashTable::getPrime(int size){
     int primes[7] = {50021, 100153, 200363, 400853, 801811, 1604021, 3210703}; 
