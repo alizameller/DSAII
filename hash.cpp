@@ -1,6 +1,6 @@
 #include "hash.h"
 #include <iostream>
-#include <string>
+#include <string>   
 #include <list>
 #include <vector>
 
@@ -11,7 +11,7 @@ hashTable::hashItem::hashItem() {
     isOccupied = false;
     isDeleted = false;
     pv = nullptr;
-}
+} 
 
 //hashTable constructor
 hashTable::hashTable(int size){
@@ -50,13 +50,37 @@ bool hashTable::contains(const string &key){
     }
 }
 
-void *getPointer(const std::string &key, bool *b = nullptr) {
-    &b = contains(key);
+void * hashTable::getPointer(const std::string &key, bool *b) {
+    int thisPos = findPos(key);
+    if (b) {
+        *b = !(thisPos == -1); 
+    }
+
+    if (thisPos == -1) {
+        return nullptr;
+    }
+
+    return data[thisPos].pv; 
 }
 
-int setPointer(const std::string &key, void *pv);
+int hashTable::setPointer(const std::string &key, void *pv) {
+    int thisPos = findPos(key);
+    if (thisPos == -1) {
+        return 1;
+    } 
+    data[thisPos].pv = pv;
+    return 0;
+}
 
-bool remove(const std::string &key);
+bool hashTable::remove(const std::string &key) {
+    int thisPos = findPos(key);
+    if (thisPos == -1) {
+        return false;
+    }
+    data[thisPos].isDeleted = true;
+
+    return true; 
+}
 
 // function to get the next prime value for re-hashing
 unsigned int hashTable::getPrime(int size){
