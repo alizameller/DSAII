@@ -13,7 +13,7 @@ class heap {
         // and the mapping (hash table) based on the specified capacity
         //
         heap(int capacity);
-
+        
         //
         // insert - Inserts a new node into the binary heap
         //
