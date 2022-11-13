@@ -52,7 +52,7 @@ void Graph::buildGraph(ifstream *infile) {
 }
 
 void Graph::printGraph() {
-    list<Node*>::iterator it;
+    vector<Node*>::iterator it;
     list< pair<Node*, int> >::iterator i; 
     
     for (it = nodes.begin(); it != nodes.end(); it++) {
@@ -64,25 +64,40 @@ void Graph::printGraph() {
 }
 
 void Graph::dijkstras(string sourceId) {
-    heap dijkstra(size); 
+    heap unknowns(size); 
     distances.resize(size);
     prevs.resize(size);
-/* 
-    for each vertex v in G
-        dv ← ∞
-        knownv ← FALSE
-    ds ← 0
-    ps ← NULL
-    while there are still unknown vertices
-        v ← the unknown vertex with the
-            smallest d-value
-        knownv ← TRUE
-        for each edge from v to vertex w
-            if dv + cv,w < dw
-                dw ← dv + cv,w
-                pw ← v
-*/
+
+    vector<Node*>::iterator it;
+    list< pair<Node*, int> >::iterator i; 
+    
+    for (it = nodes.begin(); it != nodes.end(); it++) { //for each vertex v in G
+        unknowns.insert((*it)->id, INT_MAX, NULL); // dv ← ∞
+    }
+
+    unknowns.setKey(sourceId, 0); // ds ← 0
+    unknowns.setPointer(sourceId, (Node *)nodeVertex.getPointer(sourceId)); // ps ← source (to follow output format guidelines)
+
+    string vId;
+    Node *vNode;
+    int vKey; 
+    Node *pvPrevs; 
+
+    while (!unknowns.deleteMin(&vId, &vKey, (void *) &pvPrevs)) { // while there are still unknown vertices (while heap is empty)
+        vNode = (Node *)nodeVertex.getPointer(vId);
+        distances[vNode->index] = vKey; // assign determined shortest distance to corresponding index in distances
+        prevs[vNode->index] = pvPrevs; // assign pointer to prev. node to corresponding index in prevs
+
+        for (i = vNode->edges.begin(); i != vNode->edges.end(); i++) { // for each edge from v to vertex w (iterate through adjacency list)
+            if (vKey + (*i).second < unknowns.getKey((*i).first->id)) { // if dv + cv,w < dw
+                unknowns.setKey((*i).first->id, vKey + (*i).second); // dw ← dv + cv,w
+                unknowns.setPointer((*i).first->id, vNode); // pw ← v
+            }
+        }
+    }
 }
+
+
 
 int main () {
     string filename;
