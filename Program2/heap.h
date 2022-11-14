@@ -69,6 +69,17 @@ class heap {
         //
         int remove(const std::string &id, int *pKey = nullptr, void *ppData = nullptr);
 
+        // getKey - get the key of the specified id from the binary heap
+        //  
+        // Returns:
+        //      key of specified id on success
+        int getKey(std::string &id); 
+
+        // setPointer - sets the pointer of the specified id from the binary heap
+        //
+        void setPointer(std::string &id, void *pv); 
+        bool heapContains(std::string id); 
+
     private:
 
         class node { // An inner class within heap

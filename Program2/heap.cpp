@@ -1,4 +1,5 @@
 #include "heap.h"
+#include <iostream>
 
 using namespace std; 
 
@@ -197,4 +198,18 @@ void heap::percolateDown(int posCur) {
 int heap::getPos(heap::node *pn) {
     int pos = pn - &data[0];
     return pos;
+}
+
+int heap::getKey(string &id) {
+    node *pn = (node *)mapping.getPointer(id);
+    return pn->key;  
+}
+
+void heap::setPointer(string &id, void *pv) {
+    node *pn = (node *)mapping.getPointer(id);
+    pn->pData = pv; 
+}
+
+bool heap::heapContains(string id) {
+    return mapping.contains(id); 
 }
