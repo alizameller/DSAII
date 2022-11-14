@@ -89,6 +89,9 @@ void Graph::dijkstras(string sourceId) {
         prevs[vNode->index] = pvPrevs; // assign pointer to prev. node to corresponding index in prevs
 
         for (i = vNode->edges.begin(); i != vNode->edges.end(); i++) { // for each edge from v to vertex w (iterate through adjacency list)
+            if (!unknowns.heapContains((*i).first->id)) {
+                continue;
+            }
             if (vKey + (*i).second < unknowns.getKey((*i).first->id)) { // if dv + cv,w < dw
                 unknowns.setKey((*i).first->id, vKey + (*i).second); // dw ← dv + cv,w
                 unknowns.setPointer((*i).first->id, vNode); // pw ← v
@@ -97,16 +100,54 @@ void Graph::dijkstras(string sourceId) {
     }
 }
 
+bool Graph::graphContains(string id) {
+    return nodeVertex.contains(id);
+}
 
+string Graph::printPath(Node *end) {
+    string path = "]"; 
+    int i = end->index;
+    Node *curr = end;
+    while (prevs[i] != curr) {
+        path = ", " + curr->id + path; 
+        curr = prevs[i];
+        i = curr->index;
+    }
+    path = "[" + curr->id + path; 
+    return path;
+}
+
+
+void Graph::outputGraph(ofstream *outFile) {
+    vector<Node*>::iterator it;
+
+    for (it = nodes.begin(); it != nodes.end(); it++) {
+        *outFile << (*it)->id;    
+        *outFile << ": " << distances[(*it)->index] << " " << printPath(*it) << endl;
+    }
+}
 
 int main () {
-    string filename;
+    string inFilename;
+    string outFilename;
     Graph graph;
+    string startingVertex;
 
     cout << "Enter the name of a file specifying the graph: ";
-    cin >> filename;
-    ifstream infile(filename);
-    
+    cin >> inFilename;
+    ifstream infile(inFilename);
     graph.buildGraph(&infile);
-    graph.printGraph(); 
+
+    do { 
+        cout << "Enter the starting vertex: "; 
+        cin >> startingVertex;
+    } while (!graph.graphContains(startingVertex));
+
+    graph.printGraph();
+    graph.dijkstras(startingVertex); 
+
+    cout << "Enter the name of a file specifying the graph: ";
+    cin >> outFilename;
+    ofstream outfile(outFilename);
+    graph.outputGraph(&outfile);
 }
