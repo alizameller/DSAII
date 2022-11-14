@@ -1,6 +1,7 @@
 #include "dijkstras.h"
 #include <fstream>
 #include <sstream>
+#include <ctime>
 
 using namespace std; 
 
@@ -45,12 +46,13 @@ void Graph::buildGraph(ifstream *infile) {
         istringstream iss(line);
         if (!(iss >> id1 >> id2 >> weight)) { 
             cout << "test\n";
-            break; // error ?
+            break; // error 
         }
         insertEdge(id1, id2, weight);
     }
 }
 
+/* FOR DEBUGGING PURPOSES
 void Graph::printGraph() {
     vector<Node*>::iterator it;
     list< pair<Node*, int> >::iterator i; 
@@ -61,16 +63,15 @@ void Graph::printGraph() {
             cout << "\tDest: " << (*i).first->id << " Weight: " << (*i).second << endl; 
         }
     }
-}
+} */
 
 void Graph::dijkstras(string sourceId) {
     heap unknowns(size); 
-    distances.resize(size);
+    distances.resize(size, INT_MAX);
     prevs.resize(size);
 
     vector<Node*>::iterator it;
-    list< pair<Node*, int> >::iterator i; 
-    
+
     for (it = nodes.begin(); it != nodes.end(); it++) { //for each vertex v in G
         unknowns.insert((*it)->id, INT_MAX, NULL); // dv ← ∞
     }
@@ -82,6 +83,7 @@ void Graph::dijkstras(string sourceId) {
     Node *vNode;
     int vKey; 
     Node *pvPrevs; 
+    list< pair<Node*, int> >::iterator i; 
 
     while (!unknowns.deleteMin(&vId, &vKey, (void *) &pvPrevs)) { // while there are still unknown vertices (while heap is empty)
         vNode = (Node *)nodeVertex.getPointer(vId);
@@ -89,10 +91,9 @@ void Graph::dijkstras(string sourceId) {
         prevs[vNode->index] = pvPrevs; // assign pointer to prev. node to corresponding index in prevs
 
         for (i = vNode->edges.begin(); i != vNode->edges.end(); i++) { // for each edge from v to vertex w (iterate through adjacency list)
-            if (!unknowns.heapContains((*i).first->id)) {
+            if (!unknowns.heapContains((*i).first->id) || vKey == INT_MAX) {
                 continue;
-            }
-            if (vKey + (*i).second < unknowns.getKey((*i).first->id)) { // if dv + cv,w < dw
+            } else if (vKey + (*i).second < unknowns.getKey((*i).first->id)) { // if dv + cv,w < dw
                 unknowns.setKey((*i).first->id, vKey + (*i).second); // dw ← dv + cv,w
                 unknowns.setPointer((*i).first->id, vNode); // pw ← v
             }
@@ -108,6 +109,7 @@ string Graph::printPath(Node *end) {
     string path = "]"; 
     int i = end->index;
     Node *curr = end;
+    
     while (prevs[i] != curr) {
         path = ", " + curr->id + path; 
         curr = prevs[i];
@@ -117,13 +119,16 @@ string Graph::printPath(Node *end) {
     return path;
 }
 
-
 void Graph::outputGraph(ofstream *outFile) {
     vector<Node*>::iterator it;
-
     for (it = nodes.begin(); it != nodes.end(); it++) {
-        *outFile << (*it)->id;    
-        *outFile << ": " << distances[(*it)->index] << " " << printPath(*it) << endl;
+        *outFile << (*it)->id << ": "; 
+        cout << distances[(*it)->index] << endl;
+        if (distances[(*it)->index] == INT_MAX) {
+            *outFile << "NO PATH" << endl; 
+        } else {
+            *outFile << distances[(*it)->index] << " " << printPath(*it) << endl;
+        }
     }
 }
 
@@ -133,20 +138,23 @@ int main () {
     Graph graph;
     string startingVertex;
 
-    cout << "Enter the name of a file specifying the graph: ";
+    cout << "Enter name of graph file: ";
     cin >> inFilename;
     ifstream infile(inFilename);
     graph.buildGraph(&infile);
 
     do { 
-        cout << "Enter the starting vertex: "; 
+        cout << "Enter name of starting vertex: "; 
         cin >> startingVertex;
     } while (!graph.graphContains(startingVertex));
 
-    graph.printGraph();
+    clock_t t1 = clock();
     graph.dijkstras(startingVertex); 
+    clock_t t2 = clock();
+    double timeDiff = ((double) (t2 - t1)) / CLOCKS_PER_SEC;
+    cout << "Total time (in seconds) to apply Dijkstra's algorithm: " << timeDiff << endl;
 
-    cout << "Enter the name of a file specifying the graph: ";
+    cout << "Enter name of output file: ";
     cin >> outFilename;
     ofstream outfile(outFilename);
     graph.outputGraph(&outfile);
