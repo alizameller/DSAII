@@ -21,22 +21,22 @@ hashTable::hashTable(int size){
 }
 
 // find position
-int hashTable::findPos(const string &key){
+int hashTable::findPos(const string &key) {
     int currentPos = this->hash(key); //this is an index value
 
-    while (currentPos < capacity){ 
+    while (true) { 
+        if (currentPos == capacity){
+            currentPos = 0;
+        }
         if (data[currentPos].isDeleted){ // slot is lazily deleted
             currentPos++;
             continue;
         } else if (!data[currentPos].isOccupied) { // not deleted, not occupied
             return -1;
         } else if (data[currentPos].key == key) { // key being checked is same as key at currentPos
-            return currentPos;; 
+            return currentPos;
         }   
         currentPos++;
-        if (currentPos == capacity){
-            currentPos = 0;
-        }
     }
     return 0; //this will never trigger (just to suppress warning)
 }
