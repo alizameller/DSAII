@@ -68,7 +68,7 @@ int heap::deleteMin(std::string *pId, int *pKey, void *ppData) {
     }
 
     if (!mapping.remove(data[1].id)) { //remove this item from hash table
-        fprintf(stderr, "Error: Item %s not found in hash table when performing deleteMin\n", (data[1].id).c_str()); 
+        cerr << "Error: Item " << (data[1].id).c_str() << " not found in hash table when performing deleteMin\n"; 
         exit(1);
     }
 
@@ -96,7 +96,7 @@ int heap::remove(const std::string &id, int *pKey, void *ppData) {
     }
 
     if (!mapping.remove(pn->id)) { //remove this item from hash table
-        fprintf(stderr, "Error: Item %s not found in hash table when performing remove\n", (pn->id).c_str()); 
+        cerr << "Error: Item " << (pn->id).c_str() << "not found in hash table when performing remove\n"; 
         exit(1);
     }
 
@@ -130,7 +130,7 @@ void heap::percolateUp(int posCur) {
         data[posCur/2] = newNode; //put new node at location of parent node
         if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
             // key does not exist on hashTable
-            fprintf(stderr, "Error: Item %s not found in hash table when performing percolateUp\n", (data[posCur].id).c_str()); 
+            cerr << "Error: Item " << (data[posCur].id).c_str() << " not found in hash table when performing percolateUp\n"; 
             exit(1);
         }
         posCur = posCur/2; 
@@ -139,8 +139,8 @@ void heap::percolateUp(int posCur) {
     if (int var = mapping.insert(data[posCur].id, (void *) &data[posCur]) == 1) {
         mapping.setPointer(data[posCur].id, (void *) &data[posCur]); //update pointer of node in hashTable
     } else if (var == 2) {
-        // rehash failed
-        fprintf(stderr, "Error: rehash failed when trying to insert %s when performing percolateUp", (data[posCur].id).c_str()); 
+        // rehash failed -> we should never get here!
+        cerr << "Error: rehash failed when trying to insert " << (data[posCur].id).c_str() << " when performing percolateUp"; 
     }
 }
 
@@ -157,7 +157,7 @@ void heap::percolateDown(int posCur) {
             data[posCur*2] = hold; // put hold node at location of child node
             if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
                 // key does not exist on hashTable
-                fprintf(stderr, "Error: Item %s not found in hash table when performing percolateDown 1\n", (data[posCur].id).c_str()); 
+                cerr << "Error: Item " << (data[posCur].id).c_str() << " not found in hash table when performing percolateDown 1\n"; 
                 exit(1);
             }
             posCur = posCur*2;
@@ -166,7 +166,7 @@ void heap::percolateDown(int posCur) {
             data[posCur*2 + 1] = hold; // put hold node at location of child node
             if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
                 // key does not exist on hashTable
-                fprintf(stderr, "Error: Item %s not found in hash table when performing percolateDown 2\n", (data[posCur].id).c_str()); 
+                cerr << "Error: Item " << (data[posCur].id).c_str() << " not found in hash table when performing percolateDown 2\n"; 
                 exit(1);
             }
             posCur = posCur*2 + 1;
@@ -180,7 +180,7 @@ void heap::percolateDown(int posCur) {
 
         if (mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of parent node in hashTable
             // key does not exist on hashTable
-            fprintf(stderr, "Error: Item %s not found in hash table when performing percolateDown 3\n", (data[posCur].id).c_str()); 
+            cerr << "Error: Item " << (data[posCur].id).c_str() << " not found in hash table when performing percolateDown 3\n"; 
             exit(1);
         }
         posCur = posCur*2; 
@@ -188,7 +188,7 @@ void heap::percolateDown(int posCur) {
 
     if (currentSize && mapping.setPointer(data[posCur].id, (void *) &data[posCur])) { //update pointer of node in hashTable
         // key does not exist on hashTable
-        fprintf(stderr, "Error: Item %s not found in hash table when performing percolateDown 4\n", (data[posCur].id).c_str()); 
+        cerr << "Error: Item " << (data[posCur].id).c_str() << " not found in hash table when performing percolateDown 4\n"; 
         exit(1); 
     }
 
