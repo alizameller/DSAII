@@ -56,14 +56,15 @@ int main(){
             }
         }
 
-        /* FOR DEBUGGING USE ONLY */
-        
+        /* FOR DEBUGGING USE ONLY -- PRINTS OUT MATRIX */
+        /*
         for (int i = 0; i <= sizeA; i++) {
             for (int j = 0; j <= sizeB; j++) {
                 cout << matrix[i][j] << " ";
             }
             cout << endl;
         }
+        */
 
         if (matrix[sizeA][sizeB] == false) {
             output << "*** NOT A MERGE ***"; 
@@ -73,11 +74,11 @@ int main(){
             int j = sizeB;
             int it = 1; 
 
-            while ((i && j) || (i && !j) || (!i && j)) {
-                if (!i) {
+            while (i || j) {
+                if (!i) { // in the 0th row
                     outString = C[sizeC-it] + outString;
                     it++, j--; 
-                } else if (!j) {
+                } else if (!j) { //in the 0th column
                     outString = (char) toupper (C[sizeC-it]) + outString;
                     it++, i--;
                 } else if (matrix[i][j-1]) {
@@ -88,18 +89,6 @@ int main(){
                     it++, i--; 
                 }
             }
-
-            /*
-            itA = A.begin();
-            for (itC = C.begin(); itC != C.end(); itC++) {
-                if (*itC == *itA) {
-                    output << (char) toupper(*itC); 
-                    itA++;
-                    continue;
-                } 
-                output << *itC; 
-            }
-            */
         }
 
         output << outString << endl; 
