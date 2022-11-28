@@ -73,14 +73,21 @@ int main(){
             int j = sizeB;
             int it = 1; 
 
-            while (i >= 0 && j >= 0)
-                if (matrix[i][j-1]) {
+            while ((i && j) || (i && !j) || (!i && j)) {
+                if (!i) {
+                    outString = C[sizeC-it] + outString;
+                    it++, j--; 
+                } else if (!j) {
+                    outString = (char) toupper (C[sizeC-it]) + outString;
+                    it++, i--;
+                } else if (matrix[i][j-1]) {
                     outString = C[sizeC-it] + outString;
                     it++, j--; 
                 } else {
                     outString = (char) toupper (C[sizeC-it]) + outString;
                     it++, i--; 
                 }
+            }
 
             /*
             itA = A.begin();
